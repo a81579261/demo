@@ -4,25 +4,25 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.dao.DemoImportDao;
 import com.example.demo.dto.DemoImportDTO;
 import com.example.demo.dto.DemoImportFailDTO;
 import com.example.demo.entity.DemoImport;
-import com.example.demo.dao.DemoImportDao;
 import com.example.demo.service.DemoImportService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.utils.RegxUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -40,6 +40,7 @@ public class DemoImportServiceImpl extends ServiceImpl<DemoImportDao, DemoImport
     private DemoImportDao demoImportDao;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void importDemo(List<DemoImportDTO> list, HttpServletResponse response) {
         log.info("开始导入............");
         Long beginTime = System.currentTimeMillis();
@@ -51,8 +52,7 @@ public class DemoImportServiceImpl extends ServiceImpl<DemoImportDao, DemoImport
                 continue;
             }
             //手机号码校验
-            String regex1="^[1](([3|5|8][\\d])|([4][4,5,6,7,8,9])|([6][2,5,6,7])|([7][^9])|([9][1,8,9]))[\\d]{8}$";
-            if (Pattern.compile(regex1).matcher(e.getCellPhone()).matches()){
+            if (!RegxUtils.isMobile(e.getCellPhone())){
                 addToFailList(e, failList, "手机号码不符合");
                 continue;
             }

@@ -31,7 +31,7 @@ public class DemoImport implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "名字")
-    @TableId(value = "name",type = IdType.AUTO)
+    @TableField(value = "name")
     private String name;
 
     @ApiModelProperty(value = "年龄")
@@ -47,7 +47,7 @@ public class DemoImport implements Serializable {
     private String cellPhone;
 
     @ApiModelProperty(value = "id")
-    @TableId("id")
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
 
